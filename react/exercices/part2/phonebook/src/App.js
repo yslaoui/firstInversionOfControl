@@ -32,16 +32,14 @@ const PersonForm = (props) => {
 
 // TODO extract a component that renders all people from the phonebook
 const Persons = (props) => {
-  
-  
   const deleteSubmit = (id) => {
     const resourceURL = `http://localhost:3001/persons/${id}`
     const resourceToDelete = props.showPerson.find((x)=>x.id==id)
     if (window.confirm(`Delete ${resourceToDelete.name} ?`)) {  
-      axios.delete(resourceURL)
+      axios
+        .delete(resourceURL)
     }
   }
-  
   
   return (
     <div>
@@ -56,7 +54,13 @@ const Persons = (props) => {
   )
 }
  
-
+const SinglePerson = (props) => {
+  return(
+    <div>
+      <p> {props.name} {props.number} <button type='submit' onClick={props.onclick}>DELETE</button> </p>
+    </div>
+  )
+}
 
 const App = () => {
   
@@ -114,7 +118,16 @@ const App = () => {
 
   const showPerson = persons.filter(x => x.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
 
- 
+  const deleteSubmit = (id) => {
+    const resourceURL = `http://localhost:3001/persons/${id}`
+    const resourceToDelete = showPerson.find((x)=>x.id==id)
+    if (window.confirm(`Delete ${resourceToDelete.name} ?`)) {  
+      axios
+        .delete(resourceURL)
+        .then(()=>setPersons(persons.filter((x)=>x.id !== id)))
+    }
+  }
+
   
   // RENDERING
   return (
@@ -126,7 +139,10 @@ const App = () => {
       <PersonForm handleSubmit={handleSubmit} newName={newName} changeName={changeName} newPhoneNumber={newPhoneNumber} changePhoneNumber={changePhoneNumber} />
       
       <h2>Phone Numbers</h2>
-      <Persons showPerson={showPerson} />
+      {showPerson.map( x=> 
+        <SinglePerson key={x.id} name={x.name} number={x.number} onclick={()=>deleteSubmit(x.id)} />
+      
+      )}
     </div>
     
   )
