@@ -1,4 +1,6 @@
-import { useState } from 'react' 
+import { useState, useEffect } from 'react'
+import axios from 'axios' 
+import services from './Services/services'
 
 // TODO extract the search filter
 const Filter = (props) => {
@@ -30,28 +32,50 @@ const PersonForm = (props) => {
 
 // TODO extract a component that renders all people from the phonebook
 const Persons = (props) => {
+  
+  
+  const deleteSubmit = (id) => {
+    const resourceURL = `http://localhost:3001/persons/${id}`
+    const resourceToDelete = props.showPerson.find((x)=>x.id==id)
+    if (window.confirm(`Delete ${resourceToDelete.name} ?`)) {  
+      axios.delete(resourceURL)
+    }
+  }
+  
+  
   return (
     <div>
-        {props.showPerson.map((x) => <p key={x.id}>{x.name} {x.phoneNumber}</p> )}  
+        {props.showPerson.map((x) =>  {
+          return (  
+            <div key={x.id}> 
+              <p>{x.name} {x.number} <button type='submit' onClick={()=>deleteSubmit(x.id)}> Delete </button></p> 
+            </div>
+          )
+        })}  
     </div>
   )
 }
  
 
 
-
 const App = () => {
   
   // STATE VARIABLES
-  const [persons, setPersons] = useState([
-    {id: 1, name: 'Arto Hellas', phoneNumber: '0634463671'},
-    {id: 2, name: 'Yassine Slaoui', phoneNumber: '0701112659'},
-    {id: 3, name: 'Sophia Slaoui', phoneNumber: '0789548756'},
-    {id: 4, name: 'Hiba Bennis', phoneNumber: '0658745895'}
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+
+  // Getting initial data of persons state variable from the server
+  useEffect(() => {
+    services
+      .getAll('http://localhost:3001/persons')
+      .then(initialContacts => {
+        setPersons(initialContacts)
+      })
+  }, [])
+
 
   // EVENT HANDLERS
   const changeName = (event) => {
@@ -70,10 +94,16 @@ const App = () => {
     event.preventDefault()
     const personNames = persons.map(x=> x.name)
     if (!(personNames.includes(newName))) {
-      const newPerson = {id:persons.length+1 ,name:newName, phoneNumber: newPhoneNumber}
+      const newPerson = {id:persons.length+1 ,name:newName, number: newPhoneNumber}
       setPersons(persons.concat(newPerson))
       setNewName('')
-      setNewPhoneNumber('')         
+      setNewPhoneNumber('')  
+      // Add the phone numbers submitted by the users to the server
+      services
+        .insert(newPerson)
+        .then(newContact => {
+          setPersons(persons.concat(newContact))
+        })        
     }
     else {
       alert(`${newName} is already added to phonebook`)
@@ -84,6 +114,7 @@ const App = () => {
 
   const showPerson = persons.filter(x => x.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
 
+ 
   
   // RENDERING
   return (
