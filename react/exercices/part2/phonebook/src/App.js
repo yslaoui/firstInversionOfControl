@@ -30,29 +30,6 @@ const PersonForm = (props) => {
   )
 }
 
-// TODO extract a component that renders all people from the phonebook
-const Persons = (props) => {
-  const deleteSubmit = (id) => {
-    const resourceURL = `http://localhost:3001/persons/${id}`
-    const resourceToDelete = props.showPerson.find((x)=>x.id==id)
-    if (window.confirm(`Delete ${resourceToDelete.name} ?`)) {  
-      axios
-        .delete(resourceURL)
-    }
-  }
-  
-  return (
-    <div>
-        {props.showPerson.map((x) =>  {
-          return (  
-            <div key={x.id}> 
-              <p>{x.name} {x.number} <button type='submit' onClick={()=>deleteSubmit(x.id)}> Delete </button></p> 
-            </div>
-          )
-        })}  
-    </div>
-  )
-}
  
 const SinglePerson = (props) => {
   return(
@@ -69,6 +46,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [cumulativeId, setCumulativeId] = useState(0)
 
 
   // Getting initial data of persons state variable from the server
@@ -77,6 +55,7 @@ const App = () => {
       .getAll('http://localhost:3001/persons')
       .then(initialContacts => {
         setPersons(initialContacts)
+        setCumulativeId(initialContacts.length)
       })
   }, [])
 
@@ -94,14 +73,23 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+//   if name not in list in list
+//     window then add name to server
+//   else if phoneNumber not in list 
+//     window then update phone number
+//   else  
+//    alert and do not add to server
+
+
   const handleSubmit = (event) => {
     event.preventDefault()
     const personNames = persons.map(x=> x.name)
+    const phoneNumbers = persons.map(x=>x.number)
+    const chosenPerson = persons.find(x=> x.name==newName)
     if (!(personNames.includes(newName))) {
-      const newPerson = {id:persons.length+1 ,name:newName, number: newPhoneNumber}
+      const newPerson = {id:cumulativeId+1 ,name:newName, number: newPhoneNumber}
       setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewPhoneNumber('')  
+      setCumulativeId(cumulativeId+1)
       // Add the phone numbers submitted by the users to the server
       services
         .insert(newPerson)
@@ -109,11 +97,26 @@ const App = () => {
           setPersons(persons.concat(newContact))
         })        
     }
+    // else if newPhoneNumber == chosenPerson.number
+    else if (!(newPhoneNumber == chosenPerson.number)) {
+      console.log(`The name is the same, but the phone number different!`)
+      if (window.confirm(`${newName} is already on the phone book, replace the old number with new one `)) {
+        const resourceURL = `http://localhost:3001/persons/${chosenPerson.id}`
+        const changedResource = {...chosenPerson, number:newPhoneNumber}
+        services
+          .update(resourceURL, changedResource) 
+          .then(response=>{
+            setPersons(persons.map((x)=>x.id==chosenPerson.id ? response: x))})  
+          }  
+      }
+
     else {
       alert(`${newName} is already added to phonebook`)
       setNewName('')
       setNewPhoneNumber('') 
     }
+    setNewName('')
+    setNewPhoneNumber('')  
   }
 
   const showPerson = persons.filter(x => x.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
@@ -125,6 +128,7 @@ const App = () => {
       axios
         .delete(resourceURL)
         .then(()=>setPersons(persons.filter((x)=>x.id !== id)))
+        // .then(()=>setPersons(persons.map((x)=>x.id>id ? x.id=x.id-1:x)))
     }
   }
 
@@ -140,9 +144,9 @@ const App = () => {
       
       <h2>Phone Numbers</h2>
       {showPerson.map( x=> 
-        <SinglePerson key={x.id} name={x.name} number={x.number} onclick={()=>deleteSubmit(x.id)} />
-      
+        <SinglePerson key={x.id} name={x.name} number={x.number} onclick={()=>deleteSubmit(x.id)} /> 
       )}
+      <p>{cumulativeId}</p>
     </div>
     
   )
