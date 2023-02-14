@@ -94,8 +94,7 @@ const App = () => {
       .getAll('http://localhost:3001/persons')
       .then(initialContacts => {
         setPersons(initialContacts)
-        // TODO setShowNotification to false  
-          setCumulativeId(initialContacts.length)
+        if (initialContacts.length > 1) setCumulativeId(initialContacts.at(-1).id)  
       })
   }, [])
 
