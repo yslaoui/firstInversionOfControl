@@ -39,13 +39,6 @@ const SinglePerson = (props) => {
   )
 }
 
-/*
- TODO 
- conditional rendering 
- if showNotification props is true
-  return:  
-    For 5 seconds, display message
-*/ 
 
 const Notification = (props) => {
 
@@ -64,6 +57,24 @@ const Notification = (props) => {
   }
 }
 
+const ErrorMessage = (props) =>  {
+  const redBox = {
+    borderStyle: 'solid',
+    color: 'red',
+    background: 'lightGrey', 
+    fontSize: 20
+  }
+  if (props.showErrorMessage) {
+    return (
+      <div style={redBox}>
+          <p> Information for {props.name} has already been removed from the server</p>
+      </div>
+    )
+  }
+
+}
+
+
 const App = () => {
   
   // STATE VARIABLES
@@ -72,9 +83,8 @@ const App = () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [cumulativeId, setCumulativeId] = useState(0)
-  const [notification, setNotification] = useState('')
   const [showNotification, setshowNotification] = useState(false)
-
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
 
   // Getting initial data of persons state variable from the server
   useEffect(() => {
@@ -101,26 +111,6 @@ const App = () => {
     setFilter(event.target.value)
   }
 
-/* OLD 
-  if name not included
-      post to server
-  else if phone number is the same as included person 
-      put to server new phone number
-  else
-     error message
-*/
-
-/*  TODO
-  if name and phone number are included
-    error message
-    set ShowNotification to false
-  else
-    set showNotification to true
-    if name not included
-      post to server
-    else if phone number is the same as included person
-      put to server new phone number
-*/ 
 
   // Handler for the "Add a new person" for submission
   const handleSubmit = (event) => {
@@ -158,6 +148,9 @@ const App = () => {
             .update(resourceURL, changedResource) 
             .then(response=>{
               setPersons(persons.map((x)=>x.id==chosenPerson.id ? response: x))})  
+            .catch((error) => {
+
+            })
             } 
       }
       setshowNotification(true)
@@ -169,40 +162,7 @@ const App = () => {
 
     }
 }
-/*    
-    if (!(personNames.includes(newName))) {
-      const newPerson = {id:cumulativeId+1 ,name:newName, number: newPhoneNumber}
-      setPersons(persons.concat(newPerson))
-      setCumulativeId(cumulativeId+1)
-      // Add the phone numbers submitted by the users to the server
-      services
-        .insert(newPerson)
-        .then(newContact => {
-          setPersons(persons.concat(newContact))
-        })        
-    }
-    // else if newPhoneNumber == chosenPerson.number
-    else if (!(newPhoneNumber == chosenPerson.number)) {
-      console.log(`The name is the same, but the phone number different!`)
-      if (window.confirm(`${newName} is already on the phone book, replace the old number with new one `)) {
-        const resourceURL = `http://localhost:3001/persons/${chosenPerson.id}`
-        const changedResource = {...chosenPerson, number:newPhoneNumber}
-        services
-          .update(resourceURL, changedResource) 
-          .then(response=>{
-            setPersons(persons.map((x)=>x.id==chosenPerson.id ? response: x))})  
-          }  
-      }
 
-    else {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      setNewPhoneNumber('') 
-    }
-    setNewName('')
-    setNewPhoneNumber('')  
-  }
-*/
   const showPerson = persons.filter(x => x.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
 
   const deleteSubmit = (id) => {

@@ -1,26 +1,49 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+// api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=ea72343d57bd286731330f7cf88bb473
+
+
 const ShowDetail = (props) => {
   
+  const [temperature, setTemperature] = useState(null)
+  const [wind, setWind] = useState(null)
+  const [description, setDescription] = useState('')
+  const [icon, setIcon] = useState('')
+  const api_key = process.env.REACT_APP_API_KEY
+
   const flag = {
     fontSize: 100
   }
   if (props.index != null) {
+    
     const country = props.country
     const languages = Object.values(country.languages)
-    console.log(languages)  
-    console.log(`printing the message for the country...`)
+    const name = country.name.common
+    const capital = country.capital  
+    axios   
+      .get(`https://api.openweathermap.org/data/2.5/weather?q=${capital},${name}&APPID=${api_key}`)
+      .then (response=> {
+        setTemperature(response.data.main.temp)
+        setWind(response.data.wind.speed)
+        setIcon(response.data.weather[0].icon)
+      })
+    const celsius =  Math.round((temperature - 273.15)*10)/10  
+    
+
     return(
       <div>
-          <h1> {country.name.common} </h1>
-          <p> capital {country.capital} </p>
+          <h1> {name} </h1>
+          <p> capital {capital} </p>
           <p> area {country.area} </p>
           <span style={{fontWeight:'bold'}} > languages</span>  
           <ul>
             {languages.map((x,i)=> <li key={i} > {x} </li>)}  
           </ul>          
           <span style={flag}> {country.flag}</span>
+          <h1> Weather in {country.capital}</h1>
+          <p> temperature {celsius} celsius</p>
+          <img src= {`http://openweathermap.org/img/wn/${icon}@2x.png`} alt="" />
       </div>
     )  
   

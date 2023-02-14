@@ -2,23 +2,13 @@
   "persons": [
     {
       "id": 1,
-      "name": "y",
-      "number": "1"
+      "name": "sazs",
+      "number": "azsazs"
     },
     {
-      "id": 4,
-      "name": "e",
-      "number": "8"
-    },
-    {
-      "id": 5,
-      "name": "r",
-      "number": "20"
-    },
-    {
-      "id": 6,
-      "name": "sQSQS",
-      "number": "QSQS"
+      "id": 2,
+      "name": "azsazs",
+      "number": "azsazs"
     }
   ]
 }
