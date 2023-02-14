@@ -79,8 +79,10 @@ const App = () => {
   
   // STATE VARIABLES
   const [persons, setPersons] = useState([]) 
-  const [newName, setNewName] = useState('')
+  const [newName, setNewName] = useState('') // name as it is written by user in input filed
+  const [submittedName, setSubmittedName] = useState('') // name as it is written by user in input filed
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
+  const [submittedNumber, setSubmittedNumber] = useState('') // name as it is written by user in input filed
   const [filter, setFilter] = useState('')
   const [cumulativeId, setCumulativeId] = useState(0)
   const [showNotification, setshowNotification] = useState(false)
@@ -119,15 +121,20 @@ const App = () => {
     const phoneNumbers = persons.map(x=>x.number)
     const chosenPerson = persons.find(x=> x.name==newName)
 
-    if ((personNames.includes(newName)) && (newPhoneNumber == chosenPerson.number)) {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      setNewPhoneNumber('') 
+    // Save the sumbmitted name and phone number, because you need to immedialtely clear the input fields  
+    setSubmittedName(newName)
+    setSubmittedNumber(newPhoneNumber)
+    setNewName('')
+    setNewPhoneNumber('') 
+
+    if ((personNames.includes(submittedName)) && (submittedNumber == chosenPerson.number)) {
+      alert(`${submittedName} is already added to phonebook`)
       setshowNotification(false)
     }
 
     else {
-      if (!(personNames.includes(newName))) {
+      if (!(personNames.includes(submittedName))) {
+        console.log(`new person added`)
         const newPerson = {id:cumulativeId+1 ,name:newName, number: newPhoneNumber}
         setPersons(persons.concat(newPerson))
         setCumulativeId(cumulativeId+1)
@@ -136,28 +143,35 @@ const App = () => {
           .insert(newPerson)
           .then(newContact => {
             setPersons(persons.concat(newContact))
+            setshowNotification(true)
+
           })                       
       }
       // else if newPhoneNumber == chosenPerson.number
-      else if (!(newPhoneNumber == chosenPerson.number)) {
+      else if (!(submittedNumber == chosenPerson.number)) {
         console.log(`The name is the same, but the phone number different!`)
-        if (window.confirm(`${newName} is already on the phone book, replace the old number with new one `)) {
+        if (window.confirm(`${newName} is already on the phone book, replace the old number with new one ?`)) {
           const resourceURL = `http://localhost:3001/persons/${chosenPerson.id}`
-          const changedResource = {...chosenPerson, number:newPhoneNumber}
+          const changedResource = {...chosenPerson, number:submittedNumber}
           services
             .update(resourceURL, changedResource) 
             .then(response=>{
-              setPersons(persons.map((x)=>x.id==chosenPerson.id ? response: x))})  
+              setPersons(persons.map((x)=>x.id==chosenPerson.id ? response: x))
+              setshowNotification(true)
+            })    
             .catch((error) => {
-
+               setShowErrorMessage(true)
+               console.log(error)
+               setTimeout(()=> {
+                setShowErrorMessage(false)
+                setNewName('')
+                setNewPhoneNumber('') 
+               }, 5000)
             })
             } 
       }
-      setshowNotification(true)
       setTimeout(()=> {
         setshowNotification(false)
-        setNewName('')
-        setNewPhoneNumber('') 
       } , 5000)
 
     }
@@ -183,8 +197,9 @@ const App = () => {
       <Filter filter={filter} onChange={changeFilter}/> 
       
       <h2>Add a new person</h2>
-      <Notification showNotification = {showNotification} name={newName}/>
-      
+      <Notification showNotification = {showNotification} name={submittedName}/>
+      <ErrorMessage name={submittedName} showErrorMessage={showErrorMessage}  />
+
       <PersonForm handleSubmit={handleSubmit} newName={newName} changeName={changeName} newPhoneNumber={newPhoneNumber} changePhoneNumber={changePhoneNumber} />
       
       <h2>Phone Numbers</h2>
