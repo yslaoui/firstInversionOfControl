@@ -1,25 +1,14 @@
-/*
-
-
-Q. Handle the request so that the note that is received in the 
-request (console.log the request object to find how to access it) 
-is concatenated to the note variable. Define the note variable 
-such that It content comes from the request 
-Its  is the max id:  the id equal to the maximum id of notes. 
-Use the … notation to extract the ids and pass them to the max function. So that only if the length of notes is positive.
-The important field is the important field received, otherwise it is false
-If the response has no content, send a 400 status and chain it by printing to the webpage “error missing”. You will need to use return here, otherwise the note, defined after, will be formed anyway
-
-*/ 
-
- 
-
-
 
 const http = require('http')
 const express = require('express')
+
+// JSON parser middleware
 const app = express()
 app.use(express.json()) // for turning data of content-type application/json into a Javascript object
+
+// Middleware that allows requests from all origins
+const cors = require('cors')
+app.use(cors())
 
 let notes = [
     {
@@ -71,26 +60,8 @@ let notes = [
  }) 
 
 
-/*
-
-/*
- 
-Q. Handle the request so that the note that is received in the 
-request (console.log the request object to find how to access it) 
-is concatenated to the note variable. Define the note variable 
-such that 
-  * Its content comes from the request 
-  * Its id is the max id:  
-      ** the id equal to the maximum id of notes. Use the … notation to extract the ids and pass them to the max function. 
-      ** So that only if the length of notes is positive.
-  * The important field is the important field received, otherwise it is false
-If the response has no content, send a 400 status and chain it by printing to the webpage “error missing”. 
-  * You will need to use return here, otherwise the note, defined after, will be formed anyway
 
 
-
-
-*/ 
 
  app.post('/notes', (req, res) => {
   
