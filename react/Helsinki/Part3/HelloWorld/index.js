@@ -2,6 +2,8 @@
 const http = require('http')
 const express = require('express')
 
+// ***** MIDDLEWARE
+
 // JSON parser middleware
 const app = express()
 app.use(express.json()) // for turning data of content-type application/json into a Javascript object
@@ -10,10 +12,15 @@ app.use(express.json()) // for turning data of content-type application/json int
 const cors = require('cors')
 app.use(cors())
 
+// Middleware allows express.js to work with static js front end files generated with npm run build 
+app.use(express.static('build'))
+
+// **** Object literal that will be serverd as JSON
+
 let notes = [
     {
       id: 1,
-      content: "HTML is easy",
+      content: "HTML is wow",
       important: true
     },
     {
@@ -28,11 +35,14 @@ let notes = [
     }
   ]
 
+  
+
+// **** Building routes with express.js
+  
+
  app.get('/', (req, res) => {
     res.send('<p> Hello Guys</p>')
  }) 
-
- 
 
  app.get('/notes', (req, res) => {
     res.json(notes)
@@ -60,9 +70,6 @@ let notes = [
  }) 
 
 
-
-
-
  app.post('/notes', (req, res) => {
   
   const generateId = () => {
@@ -85,12 +92,10 @@ let notes = [
  })
 
 
+const PORT = process.env.PORT ||  3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
 
-
-
-
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
 
 

@@ -1,7 +1,7 @@
 POST http://localhost:3001/notes
 content-type: application/json
 
-# {
-#     "content": "Hi I am your post request from POSTMAN",
-#     "important": false 
-# }
+{
+    "content": "Hi I am your post request from POSTMAN",
+    "important": false 
+}
