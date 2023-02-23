@@ -1,10 +1,7 @@
 const mongoose = require('mongoose')
 
-const password = process.env.MongoDBPassword
-const appName= 'noteApp'
 
-
-const url = `mongodb+srv://yslaoui:${password}@cluster0.9uqoxi0.mongodb.net/${appName}?retryWrites=true&w=majority`
+const url = process.env.MONGODB_URI
 
 
 mongoose.set('strictQuery', false)
@@ -23,6 +20,8 @@ noteSchema.set('toJSON', {
       delete returnedObject.__v
     }
    })
+
+
    
 
 
