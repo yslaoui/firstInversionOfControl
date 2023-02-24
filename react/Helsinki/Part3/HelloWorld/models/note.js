@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
+require('dotenv').config() // this is for process.env to work
 
 
 const url = process.env.MONGODB_URI
+// const url = 'mongodb+srv://yslaoui:Skhirate_88@cluster0.9uqoxi0.mongodb.net/noteApp?retryWrites=true&w=majority'
 
 
 mongoose.set('strictQuery', false)

@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
+require('dotenv').config() // this is for process.env to work
 
+/*
 if (process.argv.length<3) {
     console.log(`Give password and argument`)
     process.exit(1)
@@ -7,8 +9,8 @@ if (process.argv.length<3) {
 
 const password = 'Skhirate_88'
 const appName= 'noteApp'
-
-const url = `mongodb+srv://yslaoui:${password}@cluster0.9uqoxi0.mongodb.net/${appName}?retryWrites=true&w=majority`
+*/
+const url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
@@ -28,20 +30,28 @@ const note = new Note({
     important: true
 })
 
-note.save().then(resulut=>{
+note.save().then(result=>{
     console.log(`note saved !`)
     mongoose.connection.close()
 })
 
-*/
 
-// finding a note
+
+// finding important notes
 Note.find({important:true}).then(result=>{
     result.forEach(note => {
         console.log(note)
     })
     mongoose.connection.close()
 })
+*/
 
+// finding all notes
+Note.find({}).then(result=>{
+    result.forEach(note => {
+        console.log(note)
+    })
+    mongoose.connection.close()
+})
 
   

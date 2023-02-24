@@ -2,9 +2,9 @@
 //***** IMPORT STATEMENTS******** */
 //******************************* */
 require('dotenv').config() // this is for process.env to work
-const Note = require('./models/note')
+const Note = require('./models/note') // this loads the Note collection from mongoDB server in javascript friendly format
 const http = require('http')
-const express = require('express')
+const express = require('express') // Express allows node to define handlers for HTTP requests coming to the server
 
 
 //***** MIDDLEWARE ************** */
@@ -39,8 +39,16 @@ app.get('/notes', (req, res) => {
 
 app.get('/notes/:id', (req, res)=> {
   // FindByID is a READ operation in CRUD
-  Note.findById(req.params.id).then((x)=>{
-    res.json(x)
+  Note.findById(req.params.id).then((note)=>{
+    if (note) {
+      res.json(note)
+    }
+    else {
+      res.status(404).send('Note not found').end()
+    }
+  }).catch((error)=>{
+    console.log(error)
+    res.status(400).json({error: 'wrong id format'})
   })
 })
 
@@ -62,6 +70,7 @@ app.post('/notes', (req, res)=> {
   
 })
 
+console.log(process.env)
 
 
 //***** SERVER ORIGIN PORT ************** */
