@@ -2,6 +2,9 @@ POST http://localhost:3001/notes
 content-type: application/json
 
 {
-    "content": "Hi I am your post request from POSTMAN",
+    "content": "testing front and back end integration",
     "important": false 
 }
+
+DELETE http://localhost:3001/notes/63fcb6dc1c77dab2464c50e0
+

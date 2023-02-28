@@ -16,17 +16,16 @@ mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
 const noteSchema = new mongoose.Schema({
-    content: String,
-    important: Boolean
+  content: String,
+  important: Boolean,
 })
 
 const Note = mongoose.model('Note', noteSchema)
 
-
 /*
-// Creating a note 
+// Creating a note
 const note = new Note({
-    content: 'Mangoose makes things easy', 
+    content: 'Mangoose makes things easy',
     important: true
 })
 
@@ -34,8 +33,6 @@ note.save().then(result=>{
     console.log(`note saved !`)
     mongoose.connection.close()
 })
-
-
 
 // finding important notes
 Note.find({important:true}).then(result=>{
@@ -47,11 +44,9 @@ Note.find({important:true}).then(result=>{
 */
 
 // finding all notes
-Note.find({}).then(result=>{
-    result.forEach(note => {
-        console.log(note)
-    })
-    mongoose.connection.close()
+Note.find({}).then((result) => {
+  result.forEach((note) => {
+    console.log(note)
+  })
+  mongoose.connection.close()
 })
-
-  
