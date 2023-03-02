@@ -1,8 +1,28 @@
+// IMPORTS
 const http = require('http');
 const express = require('express');
+const morgan = require('morgan');
+require('dotenv').config(); // this is for process.env to work
+
+// MIDDLEWARE
 
 const app = express();
+// Middleware turn strings into JSON
+app.use(express.json());
 
+// Middleware that allows requests from all origins
+const cors = require('cors');
+app.use(cors());
+
+// Middleware that reads front end from build
+app.use(express.static('build'));
+
+
+// Middleware request logger
+morgan.token('body', (req) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :response-time ms :body'));
+
+// Data served
 let notes = [
   {
     id: 1,
@@ -31,9 +51,9 @@ let notes = [
 // GET
 app.get('/', (req, res) => {
   res.send('<p> Hello World </p>');
-});
 
-app.get('/api/persons', (req, res) => res.json(notes));
+});
+app.get('/persons', (req, res) => res.json(notes));
 
 app.get('/info', (req, res) => {
   const p1 = `<p> Phonebook has info for ${notes.length} people </p>`;
@@ -41,7 +61,7 @@ app.get('/info', (req, res) => {
   res.send(p1 + p2);
 });
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/persons/:id', (req, res) => {
   const id = req.params.id;
   const requestedNote = notes.filter((x) => x.id.toString() === id);
   console.log(requestedNote);
@@ -52,12 +72,30 @@ app.get('/api/persons/:id', (req, res) => {
 });
 
 // DELETE
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/persons/:id', (req, res) => {
   const id = Number(req.params.id);
   notes = notes.filter((x) => !(x.id === id));
   res.status(204).end();
 });
 
-const PORT = 3001;
+// POST
+app.post('/persons', (req, res) => {
+  if (req.body.name === undefined || req.body.number === undefined) {
+    return res.status(400).send({ error: 'name or number is missing' });
+  }
+  const names = notes.map((x) => x.name);
+  if (names.includes(req.body.name)) {
+    return res.status(500).send({ error: 'name must be unique' });
+  }
+  const newNote = {
+    id: Math.floor(Math.random() * 1001),
+    name: req.body.name,
+    number: req.body.number,
+  };
+  notes = notes.concat(newNote);
+  return res.status(200).send(newNote);
+});
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT);
 console.log(`Server running on port ${PORT}`);

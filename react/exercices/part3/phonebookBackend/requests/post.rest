@@ -1,0 +1,28 @@
+# Good post request
+POST http://localhost:3001/api/persons/
+content-type: application/json
+
+{
+  "name": "Yassine",  
+  "number": "548421"
+}
+
+###
+# Testing error: name not unique
+POST http://localhost:3001/api/persons/
+content-type: application/json
+
+{
+  "name": "Mary Poppendieck",  
+  "number": "9865-87654"
+}
+
+###
+
+# Testing error: name or number missing
+POST http://localhost:3001/api/persons/
+content-type: application/json
+
+{ 
+  "number": "9865-87654"
+}
