@@ -23,6 +23,7 @@ content-type: application/json
 POST http://localhost:3001/api/persons/
 content-type: application/json
 
-{ 
+{
+ 
   "number": "9865-87654"
 }
