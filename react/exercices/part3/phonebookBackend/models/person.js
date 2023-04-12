@@ -10,7 +10,14 @@ const personSchema = new mongoose.Schema({
     type: String,
     minLength: 5
   },
-  number: String
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: (v) => /\d{2,3}-\d+/.test(v),
+      message: 'Format must be /\d{2,3}-\d+/ '
+    }
+  }
 });
 
 personSchema.set('toJSON', {

@@ -32,10 +32,11 @@ app.get('/', (req, res) => {
   res.send('<p> Hello World </p>');
 });
 
-app.get('/persons', (req, res) => {
+app.get('/persons', (req, res, next) => {
   Person
     .find({})
-    .then((result) => res.json(result));
+    .then((result) => res.json(result))
+    .catch(error => next(error));
   // res.json(notes);
 });
 
@@ -75,10 +76,9 @@ app.post('/persons', (req, res, next) => {
     number: req.body.number,
   });
 
-  newPerson.save().then(() => {
+  newPerson.save().then((savedNote) => {
     console.log('Note saved');
-    mongoose.connection.close();
-    return res.status(200);
+    res.status(200).json(savedNote);
   })
   .catch(error => next(error));
 });

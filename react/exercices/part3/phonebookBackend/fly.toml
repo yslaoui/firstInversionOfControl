@@ -1,12 +1,13 @@
-# fly.toml file generated for phonyphone on 2023-03-02T21:04:07+01:00
+# fly.toml file generated for phy on 2023-04-12T14:08:28Z
 
-app = "phonyphone"
+app = "phy"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
 [env]
 PORT = "8080"
+
 [experimental]
   auto_rollback = true
 
