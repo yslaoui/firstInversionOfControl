@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+require('dotenv').config() // this is for process.env to work
 
 if (process.argv.length < 3) {
   console.log('Give password argument');
@@ -10,7 +11,7 @@ const password = process.argv[2];
 const appName = 'phoneBook';
 
 const url = `mongodb+srv://yslaoui:${password}@cluster0.9uqoxi0.mongodb.net/${appName}?retryWrites=true&w=majority`;
-
+np
 mongoose.set('strictQuery', false);
 
 mongoose.connect(url);

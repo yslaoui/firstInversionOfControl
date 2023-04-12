@@ -23,8 +23,9 @@ app.use(express.static('build'));
 morgan.token('body', (req) => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :response-time ms :body'));
 
-const Person = require('./models/person');
 const { response } = require('express');
+const Person = require('./models/person');
+
 /// ****** ROUTE HANDLERS *** ///
 
 // GET
@@ -36,7 +37,7 @@ app.get('/persons', (req, res, next) => {
   Person
     .find({})
     .then((result) => res.json(result))
-    .catch(error => next(error));
+    .catch((error) => next(error));
   // res.json(notes);
 });
 
@@ -57,7 +58,7 @@ app.get('/persons/:id', (req, res, next) => {
       if (result === null) return res.status(404).json({ error: 'not found' }).end();
       return res.json(result);
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 // POST
@@ -80,12 +81,12 @@ app.post('/persons', (req, res, next) => {
     console.log('Note saved');
     res.status(200).json(savedNote);
   })
-  .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 // DELETE
 app.delete('/persons/:id', (req, res, next) => {
-  console.log('deleted')
+  console.log('deleted');
   Person
     .findByIdAndRemove(req.params.id)
     .then((result) => res.status(204).end())
@@ -98,15 +99,14 @@ app.put('/persons/:id', (req, res, next) => {
   console.log(req.body.number);
   const updatedPerson = {
     name: req.body.name,
-    number: req.body.number
-  }
+    number: req.body.number,
+  };
   console.log(req.body.name);
   console.log(req.body.number);
-  Person.findByIdAndUpdate( req.params.id, updatedPerson, {new: true})
-  .then(person => res.json(person))
-  .catch(error => next(error))
-})
-
+  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
+    .then((person) => res.json(person))
+    .catch((error) => next(error));
+});
 
 // *** ERROR HANDLER MIDDLEWARE *******/
 // **************************** //
@@ -118,17 +118,17 @@ app.put('/persons/:id', (req, res, next) => {
 // app.use(unkownIdHandler)
 
 const errorHandler = (error, req, res, next) => {
-  if (error.name == 'CastError') {
-    return res.status(400).json({error: 'malformatted id'})
-  } if (error.name == 'ValidationError') {
-    console.log(error.message)
-    return res.status(400).json({error: error.message})
+  if (error.name === 'CastError') {
+    return res.status(400).json({ error: 'malformatted id' });
+  } if (error.name === 'ValidationError') {
+    console.log(error.message);
+    return res.status(400).json({ error: error.message });
   }
-  next(error)
-}
+  next(error);
+};
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
-console.log(`Server running on port ${PORT}`)
+console.log(`Server running on port ${PORT}`);
