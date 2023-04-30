@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
-require('dotenv').config() // this is for process.env to work
-
-const url = process.env.MONGODB_URI
-// const url = 'mongodb+srv://yslaoui:Skhirate_88@cluster0.9uqoxi0.mongodb.net/noteApp?retryWrites=true&w=majority'
+const config = require('../utils/config')
 
 mongoose.set('strictQuery', false)
-mongoose.connect(url)
 
 // SCHEMA
 const noteSchema = new mongoose.Schema({
